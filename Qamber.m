@@ -1,23 +1,13 @@
-%                          <<Experiment-6 (16-Square QAM)>>
-%                               << Objective-2 >>
-% Aim: Simulation study of Performance of 16-Square QAM.
-% Objective-1: Write a program to plot signal constellation diagram of received 
-%              16-Square QAM signal in the presence of AWGN.
-% Objective-2: Write a program to plot Practical and Theoretical BER vs SNR graph
-%              of received 16-Square QAM signal in the presence of AWGN for ML receiver.
-
-% Note: For objective-1, see separate octave files named <my_16QAM_constellation.m>
 clc;
 clear all;
 close all;
 pkg load communications
-N = 4000;  % Number of bits to be transmitted using *-PSK
-           % Too large value may slow down the program
-x = randi([0,1],1,N); % Random input bits generation
-M = 16;     % Number of Symbols in 16-Square QAM
-d = sqrt(2/5); % Average symbol energy is normalised to unity
+N = 4000;
+x = randi([0,1],1,N); 
+M = 16;  
+d = sqrt(2/5); 
 
-% Symbol Generation
+
 yy = [];
 for i=1:4:length(x)
   if x(i)==0 && x(i+1)==0 & x(i+2)==0 & x(i+3)==0
@@ -56,21 +46,21 @@ for i=1:4:length(x)
   elseif x(i)==1 && x(i+1)==0 & x(i+2)==1 & x(i+3)==0
     y = 3*d/2+j*(3*d/2);
   endif
-% Transmitted Symbols
+
 yy = [yy y];
 endfor
 
-% Detection based on euclidean distance
+
 ber_simulated = [];
 ber_theoretical = [];
 ref_symbols = [-3*d/2+j*(-3*d/2) -3*d/2+j*(-d/2) -3*d/2+j*d/2 -3*d/2+j*(3*d/2) -d/2+j*(-3*d/2) -d/2+j*(-d/2) -d/2+j*d/2 -d/2+j*(3*d/2) d/2+j*(-3*d/2) d/2+j*(-d/2) d/2+j*d/2 d/2+j*(3*d/2) 3*d/2+j*(-3*d/2) 3*d/2+j*(-d/2) 3*d/2+j*d/2 3*d/2+j*(3*d/2)];
 for EbN0db = 0:15
 EbN0 = 10^(EbN0db/10);
 n = (1/sqrt(2))*[randn(1,length(yy)) + 1j*randn(1,length(yy))];
-sigma = sqrt(1/((log2(M))*EbN0)); % Symbol energy is normalized to Unity
+sigma = sqrt(1/((log2(M))*EbN0));
 r = yy + sigma*n;
 
-% Calculation of Euclidian Distances of received symbols from reference symobols
+
 min_dist_index = [];
 for i=1:length(r)
   Dist = [];
@@ -81,7 +71,7 @@ for i=1:length(r)
   min_dist_index = [min_dist_index find(Dist==min(Dist))];
 endfor
 
-% Estimation of Bits
+
 x_estimated = [];
 for i=1:length(r)
   if ref_symbols(min_dist_index(i))== -3*d/2+j*(-3*d/2);
